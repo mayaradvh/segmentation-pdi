@@ -95,7 +95,7 @@ respectivamente: topo, esquerda, baixo e direita.'''
             if pix == ARROZ:
                 n_pixels, coordenadas = inunda(label, img, x, y, n_pixels=0, coordenadas={'T': y, 'L': x, 'B': y, 'R':x})
                 # verificar ruídos
-                if n_pixels < N_PIXELS_MIN: #ruído
+                if n_pixels < n_pixels_min: #ruído
                     np.where(img == label, NO_ARROZ, img) #coloca como fundo onde tem ruído
                 else: # não ruído
                     componente = {'label': label, 'n_pixels': n_pixels, 'coordenadas': coordenadas} # salva o arroz
