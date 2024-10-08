@@ -2,6 +2,7 @@
 # Exemplo: segmentação de uma imagem em escala de cinza.
 #-------------------------------------------------------------------------------
 # Autor: Bogdan T. Nassu
+# Estudantes: Mayara Dal Vesco Hoger e Guilherme Corrêa Koller
 # Universidade Tecnológica Federal do Paraná
 #===============================================================================
 
