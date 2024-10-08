@@ -16,10 +16,10 @@ INPUT_IMAGE =  'arroz.bmp'
 
 # TODO: ajuste estes parâmetros!
 NEGATIVO = False
-THRESHOLD = 0.8
+THRESHOLD = 0.8  # 0.8 arroz e 0.3 texto
 ALTURA_MIN = 1
 LARGURA_MIN = 1
-N_PIXELS_MIN = 100
+N_PIXELS_MIN = 100  # 100 arroz e 20 texto
 ARROZ = 1.0
 NO_ARROZ = 0.0
 
@@ -38,7 +38,7 @@ Valor de retorno: versão binarizada da img_in.'''
     # Dica/desafio: usando a função np.where, dá para fazer a binarização muito
     # rapidamente, e com apenas uma linha de código!
 
-    return np.where(img > threshold, ARROZ, NO_ARROZ).astype(np.float32)
+    return np.where(img > threshold, ARROZ, NO_ARROZ)
 
 #-------------------------------------------------------------------------------
 
@@ -65,17 +65,17 @@ respectivamente: topo, esquerda, baixo e direita.'''
     list_componentes = []
 
     def inunda(label, img, x, y, n_pixels, coordenadas):
-        if x < coordenadas['R']:
-            coordenadas['R'] = x
+        if y < coordenadas['L']:
+            coordenadas['L'] = y
 
-        if x > coordenadas['L']:
-            coordenadas['L'] = x
+        if y > coordenadas['R']:
+            coordenadas['R'] = y
 
-        if y < coordenadas['T']:
-            coordenadas['T'] = y
+        if x < coordenadas['B']:
+            coordenadas['B'] = x
 
-        if y > coordenadas['B']:
-            coordenadas['B'] = y
+        if x > coordenadas['T']:
+            coordenadas['T'] = x
 
         img[x][y] = label
         n_pixels = n_pixels + 1
@@ -93,7 +93,7 @@ respectivamente: topo, esquerda, baixo e direita.'''
     for x, value in enumerate(img):
         for y, pix in enumerate (value):
             if pix == ARROZ:
-                n_pixels, coordenadas = inunda(label, img, x, y, n_pixels=0, coordenadas={'T': y, 'L': x, 'B': y, 'R':x})
+                n_pixels, coordenadas = inunda(label, img, x, y, n_pixels=0, coordenadas={'T': x, 'L': y, 'B': x, 'R':y})
                 # verificar ruídos
                 if n_pixels < n_pixels_min: #ruído
                     np.where(img == label, NO_ARROZ, img) #coloca como fundo onde tem ruído
