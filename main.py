@@ -17,8 +17,8 @@ INPUT_IMAGE =  'arroz.bmp'
 # TODO: ajuste estes parâmetros!
 NEGATIVO = False
 THRESHOLD = 0.8  # 0.8 arroz e 0.3 texto
-ALTURA_MIN = 1
-LARGURA_MIN = 1
+ALTURA_MIN = 1000
+LARGURA_MIN = 1000
 N_PIXELS_MIN = 100  # 100 arroz e 20 texto
 ARROZ = 1.0
 NO_ARROZ = 0.0
@@ -64,38 +64,39 @@ respectivamente: topo, esquerda, baixo e direita.'''
 
     list_componentes = []
 
-    def inunda(label, img, x, y, n_pixels, coordenadas):
-        if y < coordenadas['L']:
-            coordenadas['L'] = y
+    def inunda(label, img, linha, coluna, n_pixels, coordenadas):
+        if coluna < coordenadas['L']:
+            coordenadas['L'] = coluna
 
-        if y > coordenadas['R']:
-            coordenadas['R'] = y
+        if coluna > coordenadas['R']:
+            coordenadas['R'] = coluna
 
-        if x < coordenadas['B']:
-            coordenadas['B'] = x
+        if linha < coordenadas['B']:
+            coordenadas['B'] = linha
 
-        if x > coordenadas['T']:
-            coordenadas['T'] = x
+        if linha > coordenadas['T']:
+            coordenadas['T'] = linha
 
-        img[x][y] = label
+        img[linha][coluna] = label
         n_pixels = n_pixels + 1
-        if x-1 >=0 and img[x-1][y] == ARROZ: 
-            n_pixels, coordenadas = inunda(label, img, x-1, y, n_pixels, coordenadas)
-        if y-1 >=0 and img[x][y-1] == ARROZ: 
-            n_pixels, coordenadas = inunda(label, img, x, y-1, n_pixels, coordenadas)
-        if x < len(img) and img[x+1][y] == ARROZ: 
-            n_pixels, coordenadas = inunda(label, img, x+1, y, n_pixels, coordenadas)
-        if y < len(img[x]) and img[x][y+1] == ARROZ: 
-            n_pixels, coordenadas = inunda(label, img, x, y+1, n_pixels, coordenadas)
+        if linha-1 >=0 and img[linha-1][coluna] == ARROZ: 
+            n_pixels, coordenadas = inunda(label, img, linha-1, coluna, n_pixels, coordenadas)
+        if coluna-1 >=0 and img[linha][coluna-1] == ARROZ: 
+            n_pixels, coordenadas = inunda(label, img, linha, coluna-1, n_pixels, coordenadas)
+        if linha < len(img) and img[linha+1][coluna] == ARROZ: 
+            n_pixels, coordenadas = inunda(label, img, linha+1, coluna, n_pixels, coordenadas)
+        if coluna < len(img[linha]) and img[linha][coluna+1] == ARROZ: 
+            n_pixels, coordenadas = inunda(label, img, linha, coluna+1, n_pixels, coordenadas)
         return n_pixels, coordenadas
 
     label = 2
-    for x, value in enumerate(img):
-        for y, pix in enumerate (value):
+    for linha, value in enumerate(img):
+        for coluna, pix in enumerate (value):
             if pix == ARROZ:
-                n_pixels, coordenadas = inunda(label, img, x, y, n_pixels=0, coordenadas={'T': x, 'L': y, 'B': x, 'R':y})
+                n_pixels, coordenadas = inunda(label, img, linha, coluna, n_pixels=0, coordenadas={'T': linha, 'L': coluna, 'B': linha, 'R':coluna})
                 # verificar ruídos
-                if n_pixels < n_pixels_min: #ruído
+                print(coordenadas['R'] - coordenadas['L'])
+                if n_pixels < n_pixels_min and (coordenadas['T'] - coordenadas['B']) < altura_min and (coordenadas['R'] - coordenadas['L']) < largura_min: #ruído
                     np.where(img == label, NO_ARROZ, img) #coloca como fundo onde tem ruído
                 else: # não ruído
                     componente = {'label': label, 'n_pixels': n_pixels, 'coordenadas': coordenadas} # salva o arroz
